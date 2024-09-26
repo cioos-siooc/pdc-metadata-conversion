@@ -1,0 +1,137 @@
+<metadata>
+    <idinfo>
+        <citation>
+            <citeinfo>
+                <origin><![CDATA[Tortell, Philippe]]></origin>
+                <origin><![CDATA[Izett, Robert]]></origin>
+                <pubdate>20240718</pubdate>
+                <title><![CDATA[CCGS Amundsen underway gas measurements, 2018-2019]]></title>
+                <geoform>Computer file</geoform>
+                <pubinfo>
+                    <pubplace>unknown</pubplace>
+                    <publish>Tortell, P., &amp; Izett, R. (2020). CCGS Amundsen underway gas measurements, 2018-2019. Waterloo, Canada: Canadian Cryospheric Information Network (CCIN). (Unpublished Data). Canadian Cryospheric Information Network. https://doi.org/10.5884/13172</publish>
+                </pubinfo>
+                <othercit>unavailable</othercit>
+                <onlink>https://www.polardata.ca/pdcsearch/PDCSearchDOI.jsp?doi_id=13172</onlink>
+            </citeinfo>
+        </citation>
+        <descript>
+            <abstract><![CDATA[Membrane inlet mass spectrometer (MIMS) and optode / gas tension device (GTD) gas systems were deployed on the CCGS Amundsen in 2018 and 2019. These autonomous sensors obtained measurements of dissolved O2, Ar, and N2 from the ship's underway seawater supply line at approximately 10-20 sec. intervals (&lt;100 m spatial resolution). Raw and calibrated absolute gas concentrations, supersaturation anomalies, and gas ratios are reported. 
+
+Data from the underway gas instrumentation were combined with hydrographic observations of surface and depth-resolved temperature and salinity (obtained by the Amundsen Science research group) collected via underway thermosalinograph (TSG) and Rosette-mounted conductivity-temperature-depth (CTD) instrumentation. ]]></abstract>
+            <purpose><![CDATA[These underway, ship-based data, were collected using autonomous gas analyzers to observe spatial and temporal trends in surface dissolved gas (O2, Ar and N2) distributions throughout the waters of the pan-Canadian Arctic (including Labrador Sea, Davis Strait, Baffin Bay, and the Canadian Arctic Archipelago consisting of Lancaster Sound, Queen Maud Gulf, and the northern waters of Nares Strait and Kennedy Channel). Ultimately, these data will be combined with hydrographic observations to derive high spatial resolution estimates of surface waters net community production (i.e. photosynthesis minus respiration) over a multi-year period.  ]]></purpose>
+            <supplinf><![CDATA[Summary: Gases, like oxygen (O2), argon (Ar), and nitrogen (N2) exist as dissolved constituents of seawater, and their distribution is mainly controlled by water temperature and the injection of gas via bubbles. Oxygen, however, is also variably produced and consumed by biological activity through photosynthesis and respiration which are carried out by microscopic marine plants (phytoplankton), and by small grazing animals (zooplankton), respectively. The distribution of O2, relative to the that of the non-biological gases Ar and N2, therefore informs us of patters of ocean metabolism, which is important for understanding the ocean's role in supporting ocean life and removing carbon dioxide from the atmosphere. This dataset provides a fine-scale survey of this important metric across two sampling seasons in the pan-Canadian Arctic. Updated metadata and data can be found in the CCIN 13242 record. Research Program(s): ArcticNet,Other. For further information: ptortell@eoas.ubc.ca]]></supplinf>
+        </descript>
+        <timeperd>
+            <timeinfo>
+                <rngdates>
+                    <begdate><![CDATA[20180724]]></begdate>
+                    <enddate><![CDATA[20190815]]></enddate>
+                </rngdates>
+            </timeinfo>
+            <current>NULL</current>
+        </timeperd>
+        <status>
+            <progress>In work</progress>
+            <update>As needed</update>
+        </status>
+        <spdom>
+            <bounding>
+                <westbc>-105.48</westbc>
+                <eastbc>-48.4</eastbc>
+                <northbc>81.84</northbc>
+                <southbc>50</southbc>
+            </bounding>
+        </spdom>
+        <keywords>
+            <theme>
+                <themekt>NULL</themekt>
+                <themekey><![CDATA[Baffin Bay]]></themekey>
+                <themekey><![CDATA[Biogeochemistry]]></themekey>
+                <themekey><![CDATA[Biological productivity]]></themekey>
+                <themekey><![CDATA[Canadian Arctic Archipelago]]></themekey>
+                <themekey><![CDATA[Davis Strait]]></themekey>
+                <themekey><![CDATA[Gases]]></themekey>
+                <themekey><![CDATA[Lancaster Sound]]></themekey>
+                <themekey><![CDATA[Mass spectrometry]]></themekey>
+                <themekey><![CDATA[Nares Strait]]></themekey>
+            </theme>
+            <place>
+                <placekt>Labrador Sea, Newfoundland and Labrador- ABAVX; Baffin Bay, Nunavut - OABMI; Lancaster Sound, Nunavut - OAJNS; Queen Maud Gulf, Nunavut - OANPE</placekt>
+                <placekey>NULL</placekey>
+            </place>
+        </keywords>
+        <accconst><![CDATA[Public]]></accconst>
+        <useconst>NULL</useconst>
+        <ptcontac>
+            <cntinfo>
+                <cntorgp>
+                    <cntorg><![CDATA[University of British Columbia]]></cntorg>
+                    <cntper><![CDATA[Robert Izett]]></cntper>
+                </cntorgp>
+                <cntpos><![CDATA[NULL]]></cntpos>
+                <cntaddr>
+                    <addrtype><![CDATA[mailing]]></addrtype>
+                    <address><![CDATA[2041-2207 Main Mall]]></address>
+                    <city><![CDATA[Vancouver]]></city>
+                    <state><![CDATA[BC]]></state>
+                    <postal><![CDATA[V6T 1Z4]]></postal>
+                    <country><![CDATA[Canada]]></country>
+                </cntaddr>
+                <cntvoice><![CDATA[6043458525]]></cntvoice>
+                <cntfax><![CDATA[]]></cntfax>
+                <cntemail><![CDATA[rizett@eoas.ubc.ca]]></cntemail>
+            </cntinfo>
+        </ptcontac>
+        <datacred>NULL</datacred>
+    </idinfo>
+    <distinfo>
+        <distrib>
+            <cntinfo>
+                <cntperp>
+                    <cntper><![CDATA[Polar Data Catalogue]]></cntper>
+                    <cntorg><![CDATA[Canadian Cryospheric Information Network]]></cntorg>
+                </cntperp>
+                <cntpos><![CDATA[Director]]></cntpos>
+                <cntaddr>
+                    <addrtype><![CDATA[mailing]]></addrtype>
+                    <address><![CDATA[200 University Avenue West, University of Waterloo]]></address>
+                    <city><![CDATA[Waterloo]]></city>
+                    <state><![CDATA[Ontario]]></state>
+                    <postal><![CDATA[N2L 3G1]]></postal>
+                    <country><![CDATA[Canada]]></country>
+                </cntaddr>
+                <cntvoice><![CDATA[(519) 888-4567 x32689]]></cntvoice>
+                <cntfax><![CDATA[(519) 888-6768]]></cntfax>
+                <cntemail><![CDATA[pdc@uwaterloo.ca]]></cntemail>
+            </cntinfo>
+        </distrib>
+        <resdesc>13172</resdesc>
+        <distliab>Research programs, CCIN, or ArcticNet take no liability for the use or transmission of this data</distliab>
+    </distinfo>
+    <metainfo>
+        <metd>20200403</metd>
+        <metrd>20240718</metrd>
+        <metc>
+            <cntinfo>
+                <cntperp>
+                    <cntper><![CDATA[Robert Izett]]></cntper>
+                    <cntorg><![CDATA[University of British Columbia]]></cntorg>
+                </cntperp>
+                <cntaddr>
+                    <addrtype><![CDATA[mailing]]></addrtype>
+                    <address><![CDATA[2041-2207 Main Mall]]></address>
+                    <city><![CDATA[Vancouver]]></city>
+                    <state><![CDATA[BC]]></state>
+                    <postal><![CDATA[V6T 1Z4]]></postal>
+                    <country><![CDATA[Canada]]></country>
+                </cntaddr>
+                <cntvoice><![CDATA[6043458525]]></cntvoice>
+                <cntfax><![CDATA[]]></cntfax>
+                <cntemail><![CDATA[rizett@eoas.ubc.ca]]></cntemail>
+            </cntinfo>
+        </metc>
+        <metstdn>FGDC Content Standards for Digital Geospatial Metadata</metstdn>
+        <metstdv>FGDC-STD-001-1998</metstdv>
+    </metainfo>
+</metadata>

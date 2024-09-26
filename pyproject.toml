@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pdc-to-cioos-metadata-converter"
+version = "0.1.0"
+description = ""
+authors = ["Jessy Barrette <30420025+JessyBarrette@users.noreply.github.com>"]
+readme = "README.md"
+packages = [
+    { include = "converter.py", from = "." }
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+lxml = "^5.3.0"
+click = "^8.1.7"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+ruff = "^0.6.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
