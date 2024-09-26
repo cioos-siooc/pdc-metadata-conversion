@@ -1,4 +1,6 @@
+from loguru import logger
 from lxml import etree as ET
+import re
 
 # Define the namespaces
 namespaces = {
@@ -7,14 +9,33 @@ namespaces = {
 }
 
 
-def _create_contact(contact, in_citation: bool = True) -> dict:
+def _create_contact(contact, in_citation: bool, role: list[str]) -> dict:
     """Add a contact to the metadata record."""
+    logger.info("Creating contact: {}", contact)
+    name = contact.find(".//cntper").text
+    name = name.split(":")[-1].strip()
+    names = re.split('\s+',name)
+    if len(names) > 2:
+        logger.warning("Name has more than two parts: {}", name)
+    else:
+        logger.debug("Name has two parts: {}", name)
 
     return {
-        "individual": contact.find(".//name").text,
-        "organization": contact.find(".//email").text,
-        "roles": [role.text for role in contact.findall(".//role")],
+        "givenName": " ".join(names[:-1]),
+        "lastName": names[-1],
         "inCitation": in_citation,
+        "indEmail": contact.find(".//cntemail").text,
+        "indName": name,
+        "indOrcid": "",
+        "indPosition": _get(contact,".//cntpos"),
+        "orgAddress": contact.find(".//cntaddr/address").text,
+        "orgCity": contact.find(".//cntaddr/city").text,
+        "orgCountry": contact.find(".//cntaddr/country").text,
+        "orgEmail": "",
+        "orgName": contact.find(".//cntorg").text,
+        "orgRor": "",
+        "orgURL": "",
+        "role": role or [],
     }
 
 
@@ -34,136 +55,107 @@ def _create_distribution(distribution) -> dict:
     }
 
 
-def iso(file) -> dict:
-    """Convert a Polar Data Catalogue ISO xml metadata record."""
+def _get(item, tag, default=None, level="INFO") -> str:
+    """Get the text of an element with the given tag."""
+    result = item.find(tag)
+    if result is None:
+        logger.log(level, "Item {} not found in ", tag, item)
+        return default
+    return result.text
 
-    # load xml
-    tree = ET.parse(file)
+def _get_author(author) -> dict:
+    
+    author_text = author.text
+    if ',' in author_text:
+        author_text = ' '.join(author_text.split(',')[::-1])
 
+    names = re.split('\s+',author_text)
+    names = [name for name in names if name]
+    if len(names) > 2:
+        logger.warning("Name has more than two parts: {}", names)
+    else:
+        logger.debug("Name has two parts: {}", names)
     return {
-        "contact": [_create_contact(contact) for contact in tree.findall(".//contact")],
-        "distribution": [
-            _create_distribution(distribution)
-            for distribution in tree.findall(".//distribution")
-        ],
-        "identification": {
-            "title": {
-                "en": tree.find(
-                    ".//gmd:identificationInfo/gmd:DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title",
-                    namespaces,
-                ).text,
-                "fr": "",
-            },
-            "abstract": {
-                "en": "",
-            },
-            "associated_ressources": [],
-            "dates": {
-                "creation": tree.find(".//date").text,
-                "revision": tree.find(".//date").text,
-            },
-            "edition": tree.find(".//version").text,
-            "keywords": {
-                "default": {
-                    "en": [kw.text for kw in tree.findall(".//keyword")],
-                }
-            },
-            "progress_code": tree.find(".//status").text,
-            "project": [],
-            "temporal_begin": tree.find(".//temporal").text,
-            "temporal_end": tree.find(".//temporal").text,
-        },
-        "metadata": {
-            "dates": {
-                "publication": tree.find(".//date").text,
-                "revision": tree.find(
-                    ".//gmd:metadataStandardVersion/gco:CharacterString", namespaces
-                ).text,
-            },
-            "history": [],
-            "identifier": tree.find(".//identifier").text,
-            "language": tree.find(".//language").text,
-            "maintenance_note": "Generated from Polar Data Catalogue metadata record converted by the CIOOS metadata converter.",
-            "naming_authority": "Polar Data Catalogue",
-            "use_constraints": {
-                "licence": {
-                    "code": tree.find(".//rights").text,
-                    "title": {
-                        "en": tree.find(".//rights").text,
-                    },
-                    "url": tree.find(".//rights").text,
-                }
-            },
-        },
-        "platform": [],
-        "spatial": {
-            "polygon": [],
-            "vertical": {},
-            "vertical_positive": tree.find(".//vertical").text,
-        },
+        "givenName": names[:-1],
+        "lastName": names[-1],
+        "role": ["author"],
+        "inCitation": True,
     }
 
-
-def fgdc(file):
+def fgdc(file, userID: str, filename: str, recordID: str, status: str, license: str, region:str, ressourceType: list[str], sharedWith:list[str]) -> dict:
     """Parse a Polar Data Catalogue FGDC metadata record."""
 
     tree = ET.parse(file)
 
     return {
-        "identification": {
-            "title": {"en": tree.find(".//title").text},
-            "abstract": {"en": tree.find(".//abstract").text},
-            "dates": {
-                "creation": tree.find(".//date").text,
-                "revision": tree.find(".//pubdate").text,
-            },
-            "edition": "",
-            "keywords": {
-                "default": {
-                    "en": [kw.text for kw in tree.findall(".//themekey")]
-                    + tree.find(".//placekt").text.split("; "),
-                }
-            },
-            "progress_code": tree.find(".//progress").text,
-            "project": [],
-            "temporal_begin": tree.find(".//begdate").text,
-            "temporal_end": tree.find(".//enddate").text,
+        "userID": userID,
+        "organization": tree.find(".//cntorg").text,
+        "title": {"en": tree.find(".//title").text},
+        "abstract": {"en": tree.find(".//abstract").text},
+        "category": "dataset",  # TODO confirm this is related to the latest version of the schema
+        "contact": [
+            _create_contact(contact, False, ["pointOfContact"])
+            for contact in tree.findall(".//ptcontac")
+        ]+ [
+            _create_contact(contact, False, ["owner"]) for contact in tree.findall(".//distrib")
+        ] + [
+            _create_contact(contact, False, ["custodian"]) for contact in tree.findall(".//metc")
+        ] + [
+            _get_author(contact) for contact in tree.findall(".//origin")
+        ],
+        # TODO Convert all dates to ISO 8601 format
+        "created": _get(tree, ".//pubdate"),
+        "datasetIdendifier": _get(tree, ".//idinfo"),
+        "dateStart": _get(tree, ".//begdate"),
+        "dateEnd": _get(tree, ".//enddate"),
+        "datePublished": _get(tree, ".//pubdate"),
+        "dateRevised": _get(tree, ".//revdate"),
+        "distribution": [],
+        "doiCreationStatus": "",
+        "edition": "",
+        "eov": [],
+        "filename": filename,
+        "history": [], # Related to Lineage
+        "identifier": tree.find(".//idinfo").text,
+        "keywords": {
+            "en": [kw.text for kw in tree.findall(".//themekey")]
+            + tree.find(".//placekt").text.split("; "),
         },
-        "metadata": {
-            "dates": {
-                "publication": tree.find(".//metd").text,
-                "revision": tree.find(".//metrd").text,
-            },
-            "history": [],
-            "identifier": tree.find(".//idinfo").text,
-            "language": "english",
-            "maintenance_note": "\n".join(
-                [
-                    "Generated from Polar Data Catalogue metadata record converted by the CIOOS metadata converter.",
-                    "The original metadata record was in FGDC format from the Polar Data Catalogue.",
-                    tree.find(".//distliable").text,
-                ]
-            ),
-            "naming_authority": "ca.pdc",
-            "use_constraints": {
-                "licence": {
-                    "code": tree.find(".//accconst").text,
-                    "title": {
-                        "en": tree.find(".//accconst").text,
-                    },
-                    "url": tree.find(".//accconst").text,
-                }
-            },
+        "language": "en",
+        "lastEditedBy": {"displayName": "", "email": ""},
+        "license": license,
+        "limitations": {
+            "en": tree.find(".//purpose").text + "\n\n" + tree.find(".//supplinf").text,
         },
-        "spatial": {
-            "polygon": [
-                (tree.fidnd(".//westbc").text, tree.find(".//northbc").text),
-                (tree.find(".//eastbc").text, tree.find(".//northbc").text),
-                (tree.fidnd(".//westbc").text, tree.find(".//southbc").text),
-                (tree.find(".//eastbc").text, tree.find(".//southbc").text),
-                (tree.fidnd(".//westbc").text, tree.find(".//northbc").text),
-            ],
-            "vertical": {},
-            "vertical_positive": tree.find(".//vertdef").text,
+        "map": {
+            "description": {"en": ""},
+            "north": tree.find(".//northbc").text,
+            "south": tree.find(".//southbc").text,
+            "east": tree.find(".//eastbc").text,
+            "west": tree.find(".//westbc").text,
+            "polygon": "",
         },
+        "metadataScope": "Dataset",
+        "noPlatform": False,
+
+        "platforms": [{
+            "description": {"en": ""},
+            "id": '',
+            "type": "ship",
+        }],
+        "noTaxa": True,
+        "organization": "",
+        "progress": "onGoing",
+        "project": [],
+        "recordID": recordID,
+        "region": region,
+        "resourceType": ressourceType, # Projects in form
+        "sharedWith": {person: True for person in  sharedWith},
+        "status": status,
+        "timeFirstPublished": tree.find(".//metd").text,
+        "vertical": {},
+        "noVerticalExtent": False,
+        "verticalExtentDirection": "depthPositive",
+        "verticalExtentMax": _get(tree, ".//depthmax"),
+        "verticalExtentMin": _get(tree, ".//depthmix"),
     }
