@@ -2,10 +2,10 @@ from glob import glob
 
 import pytest
 
-import convert
+import convert.fgdc as fgdc
 
 
 @pytest.mark.parametrize("file", glob("tests/files/pdc*fgdc.xml"))
 def test_fgdc(file):
-    result = convert.fgdc(file, "userID", "filename", "test-recordID", "status")
+    result = fgdc.main(file, "userID", "filename", "test-recordID", "status")
     assert result

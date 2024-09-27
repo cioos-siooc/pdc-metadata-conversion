@@ -1,6 +1,7 @@
+import re
+
 from loguru import logger
 from lxml import etree as ET
-import re
 
 # Define the namespaces
 namespaces = {
@@ -14,7 +15,7 @@ def _create_contact(contact, in_citation: bool, role: list[str]) -> dict:
     logger.info("Creating contact: {}", contact)
     name = contact.find(".//cntper").text
     name = name.split(":")[-1].strip()
-    names = re.split('\s+',name)
+    names = re.split("\s+", name)
     if len(names) > 2:
         logger.warning("Name has more than two parts: {}", name)
     else:
@@ -27,7 +28,7 @@ def _create_contact(contact, in_citation: bool, role: list[str]) -> dict:
         "indEmail": contact.find(".//cntemail").text,
         "indName": name,
         "indOrcid": "",
-        "indPosition": _get(contact,".//cntpos"),
+        "indPosition": _get(contact, ".//cntpos"),
         "orgAddress": contact.find(".//cntaddr/address").text,
         "orgCity": contact.find(".//cntaddr/city").text,
         "orgCountry": contact.find(".//cntaddr/country").text,
@@ -63,13 +64,13 @@ def _get(item, tag, default=None, level="INFO") -> str:
         return default
     return result.text
 
-def _get_author(author) -> dict:
-    
-    author_text = author.text
-    if ',' in author_text:
-        author_text = ' '.join(author_text.split(',')[::-1])
 
-    names = re.split('\s+',author_text)
+def _get_author(author) -> dict:
+    author_text = author.text
+    if "," in author_text:
+        author_text = " ".join(author_text.split(",")[::-1])
+
+    names = re.split("\s+", author_text)
     names = [name for name in names if name]
     if len(names) > 2:
         logger.warning("Name has more than two parts: {}", names)
@@ -82,7 +83,18 @@ def _get_author(author) -> dict:
         "inCitation": True,
     }
 
-def fgdc(file, userID: str, filename: str, recordID: str, status: str, license: str, region:str, ressourceType: list[str], sharedWith:list[str]) -> dict:
+
+def main(
+    file,
+    userID: str,
+    filename: str,
+    recordID: str,
+    status: str,
+    license: str,
+    region: str,
+    ressourceType: list[str],
+    sharedWith: list[str],
+) -> dict:
     """Parse a Polar Data Catalogue FGDC metadata record."""
 
     tree = ET.parse(file)
@@ -96,13 +108,16 @@ def fgdc(file, userID: str, filename: str, recordID: str, status: str, license: 
         "contact": [
             _create_contact(contact, False, ["pointOfContact"])
             for contact in tree.findall(".//ptcontac")
-        ]+ [
-            _create_contact(contact, False, ["owner"]) for contact in tree.findall(".//distrib")
-        ] + [
-            _create_contact(contact, False, ["custodian"]) for contact in tree.findall(".//metc")
-        ] + [
-            _get_author(contact) for contact in tree.findall(".//origin")
-        ],
+        ]
+        + [
+            _create_contact(contact, False, ["owner"])
+            for contact in tree.findall(".//distrib")
+        ]
+        + [
+            _create_contact(contact, False, ["custodian"])
+            for contact in tree.findall(".//metc")
+        ]
+        + [_get_author(contact) for contact in tree.findall(".//origin")],
         # TODO Convert all dates to ISO 8601 format
         "created": _get(tree, ".//pubdate"),
         "datasetIdendifier": _get(tree, ".//idinfo"),
@@ -115,7 +130,7 @@ def fgdc(file, userID: str, filename: str, recordID: str, status: str, license: 
         "edition": "",
         "eov": [],
         "filename": filename,
-        "history": [], # Related to Lineage
+        "history": [],  # Related to Lineage
         "identifier": tree.find(".//idinfo").text,
         "keywords": {
             "en": [kw.text for kw in tree.findall(".//themekey")]
@@ -137,20 +152,20 @@ def fgdc(file, userID: str, filename: str, recordID: str, status: str, license: 
         },
         "metadataScope": "Dataset",
         "noPlatform": False,
-
-        "platforms": [{
-            "description": {"en": ""},
-            "id": '',
-            "type": "ship",
-        }],
+        "platforms": [
+            {
+                "description": {"en": ""},
+                "id": "",
+                "type": "ship",
+            }
+        ],
         "noTaxa": True,
-        "organization": "",
         "progress": "onGoing",
         "project": [],
         "recordID": recordID,
         "region": region,
-        "resourceType": ressourceType, # Projects in form
-        "sharedWith": {person: True for person in  sharedWith},
+        "resourceType": ressourceType,  # Projects in form
+        "sharedWith": {person: True for person in sharedWith},
         "status": status,
         "timeFirstPublished": tree.find(".//metd").text,
         "vertical": {},
