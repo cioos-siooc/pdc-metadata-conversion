@@ -1,5 +1,6 @@
 import re
 
+
 from loguru import logger
 from lxml import etree as ET
 
@@ -16,21 +17,34 @@ MAP_ISO_LANGUAGE = {
 }
 MAP_ISO_STATUS = {
     "underDevelopment": "ongoing",
+    "completed": "completed",
+}
+
+NAMES_MAPPING = {
+    "Polar Data Catalogue": "Polar Data Catalogue",
 }
 
 ROLES_MAPPING = {
-    
     "Originator": "originator",
     "Collaborator": "collaborator",
-    "Author": "author"
+    "Author": "author",
+    "coAuthor": "coauthor",
+    "pointOfContact": "pointOfContact",
+    "principalInvestigator": "principalInvestigator",
 }
+
+
 def _apply_role_mapping(role: str) -> str:
     """Apply a mapping to a role."""
     result = ROLES_MAPPING.get(role)
-    if result is None:
+
+    if result is None and role in ROLES_MAPPING.values():
+        return role
+    elif result is None:
         logger.warning("Mapping not found for role: {}", role)
         return None
     return result
+
 
 def _apply_mapping(mapping: dict, value: str) -> str:
     """Apply a mapping to a value."""
@@ -44,7 +58,7 @@ def _apply_mapping(mapping: dict, value: str) -> str:
 def _contact_name(author_text) -> list[str]:
     """Get the name of a contact."""
     if author_text is None:
-        logger.warning("No contact name found")
+        logger.debug("No contact name found")
         return [""]
     if ":" in author_text:
         author_text = author_text.split(":")[-1].strip()
@@ -54,7 +68,9 @@ def _contact_name(author_text) -> list[str]:
 
     names = re.split("\s+", author_text)
     names = [name for name in names if name]
-    if len(names) > 2:
+    if " ".join(names) in NAMES_MAPPING:
+        names = [NAMES_MAPPING[" ".join(names)]]
+    elif len(names) > 2:
         logger.warning("Name has more than two parts: {}", names)
     else:
         logger.debug("Name has two parts: {}", names)
@@ -70,7 +86,7 @@ class PDC_ISO:
         self, contact, in_citation: bool, role: list[str] = None
     ) -> dict:
         """Add a contact to the metadata record."""
-        logger.info("Creating contact: {}", contact)
+        logger.debug("Creating contact: {}", contact)
         names = _contact_name(
             self.get(".//gmd:individualName/gco:CharacterString", contact)
         )
@@ -94,7 +110,8 @@ class PDC_ISO:
             "orgName": self.get(".//gmd:organisationName/gco:CharacterString", contact),
             "orgRor": "",
             "orgURL": "",
-            "role": role or [_apply_role_mapping(self.get(".//gmd:CI_RoleCode", contact))],
+            "role": role
+            or [_apply_role_mapping(self.get(".//gmd:CI_RoleCode", contact))],
         }
 
     @staticmethod
@@ -113,7 +130,7 @@ class PDC_ISO:
             },
         }
 
-    def get(self, tag, item=None, default=None, level="INFO") -> str:
+    def get(self, tag, item=None, default=None, level="DEBUG") -> str:
         """Extract specific tag element within item."""
         result = (item or self.tree).find(tag, namespaces=namespaces)
         if result is None:
@@ -146,11 +163,12 @@ class PDC_ISO:
             roles = contact.pop("role")
             if contact not in new_contacts:
                 new_contacts += [contact]
-                new_contacts_roles+= [roles]
+                new_contacts_roles += [roles]
             else:
                 contact_id = new_contacts.index(contact)
-                new_contacts_roles[contact_id] += roles
-        
+                if roles:
+                    new_contacts_roles[contact_id] += roles
+
         # Add back roles
         for i, new_contact in enumerate(new_contacts):
             new_contact["role"] = new_contacts_roles[i]
@@ -181,35 +199,39 @@ class PDC_ISO:
             "abstract": {"en": self.get(".//gmd:abstract/gco:CharacterString")},
             "category": "dataset",  # TODO confirm this is related to the latest version of the schema
             "comment": "",
-            "contacts": self._combine_contacts([
-                self._create_contact(
-                    self.tree.find(".//gmd:pointOfContact", namespaces=namespaces),
-                    False,
-                    ["pointOfContact"],
-                ),
-                self._create_contact(
-                    self.tree.find(".//gmd:metadataMaintenance", namespaces=namespaces),
-                    False,
-                    ["custodian"],
-                ),
-                self._create_contact(
-                    self.tree.find(".//gmd:distributor", namespaces=namespaces),
-                    False,
-                    ["distributor"],
-                ),
-                *[
-                    self._create_contact(contact, False)
-                    for contact in self.tree.findall(
-                        ".//gmd:citedResponsibleParty", namespaces=namespaces
-                    )
-                ],
-                # TODO missing owner role
-            ]),
+            "contacts": self._combine_contacts(
+                [
+                    self._create_contact(
+                        self.tree.find(".//gmd:pointOfContact", namespaces=namespaces),
+                        False,
+                        ["pointOfContact"],
+                    ),
+                    self._create_contact(
+                        self.tree.find(
+                            ".//gmd:metadataMaintenance", namespaces=namespaces
+                        ),
+                        False,
+                        ["custodian"],
+                    ),
+                    self._create_contact(
+                        self.tree.find(".//gmd:distributor", namespaces=namespaces),
+                        False,
+                        ["distributor"],
+                    ),
+                    *[
+                        self._create_contact(contact, in_citation=True)
+                        for contact in self.tree.findall(
+                            ".//gmd:CI_Citation/gmd:citedResponsibleParty",
+                            namespaces=namespaces,
+                        )
+                    ],
+                    # TODO missing owner role
+                ]
+            ),
             # TODO Convert all dates to ISO 8601 format
             "created": self.get(".//pubdate"),
-            "datasetIdendifier": "https://doi.org/10.21963/" + self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[
-                -1
-            ],
+            "datasetIdentifier": "https://doi.org/10.21963/"
+            + self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[-1],
             "dateStart": self.get(".//gml:beginPosition"),
             "dateEnd": self.get(".//gml:endPosition"),
             "datePublished": self.get(".//gmd:dateStamp/gco:Date"),
@@ -222,13 +244,15 @@ class PDC_ISO:
             "history": [],  # Related to Lineage
             "identifier": "",  # example  "147b8485-a0b4-450d-8847-de51158b04ec"
             "keywords": {
-                "en": [
-                    item.strip()
-                    for kw in self.tree.findall(
-                        ".//gmd:keyword/gco:CharacterString", namespaces=namespaces
+                "en": list(
+                    set(
+                        item.strip()
+                        for kw in self.tree.findall(
+                            ".//gmd:keyword/gco:CharacterString", namespaces=namespaces
+                        )
+                        for item in kw.text.split(",")
                     )
-                    for item in kw.text.split(",")
-                ],
+                ),
             },
             "language": _apply_mapping(
                 MAP_ISO_LANGUAGE, self.get(".//gmd:language/gco:CharacterString")
@@ -245,7 +269,7 @@ class PDC_ISO:
             },
             "map": {
                 "description": {
-                    "en": ' - '.join(self.get_places()),
+                    "en": " - ".join(self.get_places()),
                 },
                 "north": self.get(".//gmd:northBoundLatitude/gco:Decimal"),
                 "south": self.get(".//gmd:southBoundLatitude/gco:Decimal"),
@@ -257,8 +281,8 @@ class PDC_ISO:
             "noPlatform": False,
             "platforms": [
                 {
-                    "description": {"en": ""},
-                    "id": "",
+                    "description": {"en": "CCGS Amundsen", "fr": "NGCC Amundsen"},
+                    "id": "18DL",
                     "type": "ship",
                 }
             ],

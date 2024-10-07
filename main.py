@@ -24,7 +24,7 @@ logger_format = (
 
 logger.remove(0)
 logger = logger.bind(iso_file="")
-logger.add(sys.stderr, level="DEBUG", format=logger_format)
+logger.add(sys.stderr, level="INFO", format=logger_format)
 
 
 def generate_random_string(length=20):
@@ -52,10 +52,11 @@ def load_pdc_records() -> pd.DataFrame:
 def cli():
     pass
 
+
 @cli.command()
 @click.argument("ccins", nargs=-1)
 @click.option("--output-dir", type=click.Path(), required=True)
-@click.option("--xml-type", type=click.Choice(["fgdc", "iso"]), required=True)  
+@click.option("--xml-type", type=click.Choice(["fgdc", "iso"]), required=True)
 @click.option("--overwrite", is_flag=True, default=False)
 def download(ccins, output_dir, xml_type, overwrite=False):
     """Download the metadata for the specified CCINs."""
@@ -69,7 +70,9 @@ def download(ccins, output_dir, xml_type, overwrite=False):
         output_file = output_dir / f"{ccin}_{xml_type}.xml"
         if output_file.exists() and not overwrite:
             continue
-        response = requests.get(f"https://www.polardata.ca/pdcsearch/xml/fgdc/{ccin}_{xml_type}.xml")
+        response = requests.get(
+            f"https://www.polardata.ca/pdcsearch/xml/fgdc/{ccin}_{xml_type}.xml"
+        )
         if response.status_code != 200:
             logger.warning("Failed to download FGDC metadata for record: {}", ccin)
             continue
@@ -94,7 +97,6 @@ def from_fgdc(
     # Convert the FGDC metadata to CIOOS Metadata Form
     results = {}
     for file in files:
-
         random_key = generate_random_string()
         results[random_key] = fgdc(
             file,
@@ -110,12 +112,12 @@ def from_fgdc(
 
     return results
 
+
 def from_iso(
     files: list[Path] | str,
     local_dir: Path,
     user: str,
     shares: list[str],
-
 ) -> None:
     """Convert PDC ISO metadata to CIOOS Metadata Form firebase JSON."""
     if not local_dir.exists():
@@ -126,7 +128,6 @@ def from_iso(
     else:
         files = local_dir.glob("*_iso.xml")
     # Download the ISO metadata for each record
-
 
     # Convert the ISO metadata to CIOOS Metadata Form
     results = {}
@@ -140,7 +141,7 @@ def from_iso(
                 user,
                 file.name,
                 file.name.replace("_iso.xml", ""),
-                status="status",
+                status="submitted",
                 license="CC-BY-4.0",
                 region="amundsen",
                 project=[],
@@ -150,18 +151,18 @@ def from_iso(
                 eov=[],
             )
     return results
-    
+
 
 def append_to_existing_records(append_to, records, shares):
     """Append new records to existing records."""
 
     with open(append_to) as f:
-            previous = json.load(f)
+        previous = json.load(f)
     if "records" not in previous:
-        previous['records'] = {}
+        previous["records"] = {}
     if "shares" not in previous:
-        previous['shares'] = {}
-    if any(set(records.keys() & previous['records'].keys())):
+        previous["shares"] = {}
+    if any(set(records.keys() & previous["records"].keys())):
         raise ValueError("Records with similar ID already exists in the append_to file")
 
     # Append records
@@ -177,7 +178,6 @@ def append_to_existing_records(append_to, records, shares):
             previous["shares"][share][user] = record
 
     return previous
-
 
 
 @cli.command()
@@ -196,12 +196,22 @@ def append_to_existing_records(append_to, records, shares):
 @click.option(
     "--user", default="unknown", help="User ID TO assign to the records within CIOOS"
 )
-@click.option("--append-to", type=click.Path(), default="", help="Append to user records provided in json format")
-@click.option("--shares", type=str, default="",help='Comma separated list of users to share the records with')
-def convert(xml_format, files, local_dir, output_file, user,shares, append_to):
+@click.option(
+    "--append-to",
+    type=click.Path(),
+    default="",
+    help="Append to user records provided in json format",
+)
+@click.option(
+    "--shares",
+    type=str,
+    default="",
+    help="Comma separated list of users to share the records with",
+)
+def convert(xml_format, files, local_dir, output_file, user, shares, append_to):
     """Convert PDC metadata to CIOOS Metadata Form."""
 
-    shares = shares.split(',')
+    shares = shares.split(",")
     local_dir = Path(local_dir)
 
     # Convert records metadata
@@ -222,11 +232,9 @@ def convert(xml_format, files, local_dir, output_file, user,shares, append_to):
     else:
         logger.debug("Creating new records")
         output = [{"records": records, "shares": records_shares or {}}]
-    
+
     logger.debug("Writing output to file: {}", output_file)
     Path(output_file).write_text(json.dumps(output, indent=2))
-
-
 
 
 if __name__ == "__main__":
