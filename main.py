@@ -4,6 +4,7 @@ import string
 import sys
 from pathlib import Path
 from glob import glob
+import uuid
 
 import click
 import pandas as pd
@@ -134,10 +135,10 @@ def from_iso(
     for file in files:
         with logger.contextualize(iso_file=file.name):
             # firebase uses a random key for the record
-            random_key = generate_random_string()
+            identifier = uuid.uuid4()
 
             pdc_iso = PDC_ISO(file)
-            results[random_key] = pdc_iso.to_cioos(
+            results[str(identifier.hex)] = pdc_iso.to_cioos(
                 user,
                 file.name,
                 file.name.replace("_iso.xml", ""),
@@ -149,6 +150,7 @@ def from_iso(
                 shares=shares,
                 distribution=[],
                 eov=[],
+                identifier=identifier,
             )
     return results
 

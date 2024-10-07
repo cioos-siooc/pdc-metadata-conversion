@@ -1,5 +1,5 @@
 import re
-
+import uuid
 
 from loguru import logger
 from lxml import etree as ET
@@ -187,8 +187,10 @@ class PDC_ISO:
         shares: list[str],
         distribution: list[dict],
         eov: list[str],
+        identifier: uuid.UUID,
     ) -> dict:
         """Parse a Polar Data Catalogue FGDC metadata record."""
+        record_uuid = uuid.uuid4()
 
         return {
             "userID": userID,
@@ -242,7 +244,7 @@ class PDC_ISO:
             "eov": eov,
             "filename": filename,
             "history": [],  # Related to Lineage
-            "identifier": "",  # example  "147b8485-a0b4-450d-8847-de51158b04ec"
+            "identifier": str(identifier),  # example  "147b8485-a0b4-450d-8847-de51158b04ec"
             "keywords": {
                 "en": list(
                     set(
@@ -302,4 +304,16 @@ class PDC_ISO:
             "verticalExtentDirection": "depthPositive",
             "verticalExtentMax": None,  # unavailable in PDC metadata
             "verticalExtentMin": None,  # unavailable in PDC metadata
+            "associated_resources": [
+                {
+                    "association_type": "IsIdenticalTo",
+                    "association_type_iso":"crossReference",
+                    "authority": "URL",
+                    "code": self.get(".//gmd:dataSetURI/gco:CharacterString"),
+                    "title": {
+                        "en": "Polar Data Catalogue equivalent record",
+                        "fr": "Enregistrement équivalent du Catalogue de données polaires",
+                    }
+                }
+            ],
         }
