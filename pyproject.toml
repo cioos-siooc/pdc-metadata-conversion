@@ -5,7 +5,7 @@ description = ""
 authors = ["Jessy Barrette <30420025+JessyBarrette@users.noreply.github.com>"]
 readme = "README.md"
 packages = [
-    { include = "converter.py", from = "." }
+    { include = "convert" }
 ]
 
 [tool.poetry.dependencies]

@@ -18,6 +18,19 @@ MAP_ISO_STATUS = {
     "underDevelopment": "ongoing",
 }
 
+ROLES_MAPPING = {
+    
+    "Originator": "originator",
+    "Collaborator": "collaborator",
+    "Author": "author"
+}
+def _apply_role_mapping(role: str) -> str:
+    """Apply a mapping to a role."""
+    result = ROLES_MAPPING.get(role)
+    if result is None:
+        logger.warning("Mapping not found for role: {}", role)
+        return None
+    return result
 
 def _apply_mapping(mapping: dict, value: str) -> str:
     """Apply a mapping to a value."""
@@ -63,7 +76,7 @@ class PDC_ISO:
         )
 
         return {
-            "givenName": " ".join(names[:-1]),
+            "givenNames": " ".join(names[:-1]),
             "lastName": names[-1],
             "inCitation": in_citation,
             "indEmail": self.get(
@@ -81,7 +94,7 @@ class PDC_ISO:
             "orgName": self.get(".//gmd:organisationName/gco:CharacterString", contact),
             "orgRor": "",
             "orgURL": "",
-            "role": role or [self.get(".//gmd:CI_RoleCode", contact)],
+            "role": role or [_apply_role_mapping(self.get(".//gmd:CI_RoleCode", contact))],
         }
 
     @staticmethod
@@ -125,9 +138,26 @@ class PDC_ISO:
                 )
         return places
 
+    def _combine_contacts(self, contacts) -> dict:
+        """Combine macthing contacts and join roles"""
+        new_contacts = []
+        new_contacts_roles = []
+        for contact in contacts:
+            roles = contact.pop("role")
+            if contact not in new_contacts:
+                new_contacts += [contact]
+                new_contacts_roles+= [roles]
+            else:
+                contact_id = new_contacts.index(contact)
+                new_contacts_roles[contact_id] += roles
+        
+        # Add back roles
+        for i, new_contact in enumerate(new_contacts):
+            new_contact["role"] = new_contacts_roles[i]
+        return new_contacts
+
     def to_cioos(
         self,
-        file,
         userID: str,
         filename: str,
         recordID: str,
@@ -136,7 +166,7 @@ class PDC_ISO:
         region: str,
         project: list[str],
         ressourceType: list[str],
-        sharedWith: list[str],
+        shares: list[str],
         distribution: list[dict],
         eov: list[str],
     ) -> dict:
@@ -151,7 +181,7 @@ class PDC_ISO:
             "abstract": {"en": self.get(".//gmd:abstract/gco:CharacterString")},
             "category": "dataset",  # TODO confirm this is related to the latest version of the schema
             "comment": "",
-            "contacts": [
+            "contacts": self._combine_contacts([
                 self._create_contact(
                     self.tree.find(".//gmd:pointOfContact", namespaces=namespaces),
                     False,
@@ -174,12 +204,12 @@ class PDC_ISO:
                     )
                 ],
                 # TODO missing owner role
-            ],
+            ]),
             # TODO Convert all dates to ISO 8601 format
             "created": self.get(".//pubdate"),
-            "datasetIdendifier": (self.get(".//gmd:dataSetURI") or "").split("=")[
+            "datasetIdendifier": "https://doi.org/10.21963/" + self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[
                 -1
-            ],  # TODO empty in example
+            ],
             "dateStart": self.get(".//gml:beginPosition"),
             "dateEnd": self.get(".//gml:endPosition"),
             "datePublished": self.get(".//gmd:dateStamp/gco:Date"),
@@ -215,7 +245,7 @@ class PDC_ISO:
             },
             "map": {
                 "description": {
-                    "en": self.get_places(),
+                    "en": ' - '.join(self.get_places()),
                 },
                 "north": self.get(".//gmd:northBoundLatitude/gco:Decimal"),
                 "south": self.get(".//gmd:southBoundLatitude/gco:Decimal"),
@@ -240,7 +270,7 @@ class PDC_ISO:
             "recordID": recordID,
             "region": region,
             "resourceType": ressourceType,  # Projects in form
-            "sharedWith": {person: True for person in sharedWith},
+            "sharedWith": {person: True for person in shares},
             "status": status,
             "timeFirstPublished": self.get(".//gmd:dateStamp/gco:Date"),
             "vertical": {},
