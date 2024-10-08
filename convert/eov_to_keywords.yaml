@@ -1,0 +1,59 @@
+"Ocean surface stress":
+  - "Air-water exchange"
+  - "Water-air gas exchange"
+"Sea ice":
+  - "Ice"
+  - "Iceberg"
+  - "Ice island"
+  - "Ice drift"
+"Sea surface height":
+"Sea surface temperature":
+"Subsurface temperature":
+  - "Temperature"
+  - "CTD profiles"
+"Surface currents":
+"Subsurface currents":
+"Sea surface salinity":
+"Subsurface salinity":
+  - "Salinity"
+  - "CTD profiles"
+  - "Conductivity"
+"Ocean surface heat flux":
+"Ocean bottom pressure":
+"Turbulent diapycnal fluxes (*pilot)":
+"Oxygen":
+  - "Oxygen"
+"Nutrients":
+  - "Nitrogen"
+"Inorganic carbon":
+  - "Particulate organic carbon"
+  - "Carbon fluxes"
+"Transient tracers":
+  - "Contaminants"
+  - "Bromine oxide"
+  - "Mercury"
+  - "Methylmercury"
+"Particulate matter":
+  - "Transmittance"
+"Nitrous oxide":
+"Stable carbon isotopes":
+"Dissolved organic carbon	Phytoplankton biomass and diversity":
+  - "Chlorophyll"
+  - "Dissolved organic carbon (DOC)"
+  - "Phytoplankton"
+"Zooplankton biomass and diversity":
+  - "Zooplankton"
+"Fish abundance and distribution":
+  - "Fishes"
+  - "Arctic Cod"
+"Marine turtles, birds, mammals abundance and distribution":
+"Hard coral cover and composition":
+"Seagrass cover and composition":
+"Macroalgal canopy cover and composition":
+"Mangrove cover and composition":
+"Microbe biomass and diversity (*pilot)":
+"Invertebrate abundance and distribution (*pilot)":
+"Ocean Colour":
+  - "Fluorescence"
+  - "Chlorophyll"
+"Ocean sound":

@@ -1,5 +1,7 @@
 import re
 import uuid
+import yaml
+from pathlib import Path
 
 from loguru import logger
 from lxml import etree as ET
@@ -32,6 +34,8 @@ ROLES_MAPPING = {
     "pointOfContact": "pointOfContact",
     "principalInvestigator": "principalInvestigator",
 }
+
+EOV_TO_KEYWORDS = yaml.safe_load(open(Path(__file__).parent / "eov_to_keywords.yaml"))
 
 
 def _apply_role_mapping(role: str) -> str:
@@ -174,6 +178,45 @@ class PDC_ISO:
             new_contact["role"] = new_contacts_roles[i]
         return new_contacts
 
+    def _get_keywords(self) -> list[str]:
+        """Retrive theme type keywords."""
+        keywords = []
+        for kw in self.tree.findall(
+            ".//gmd:descriptiveKeywords", namespaces=namespaces
+        ):
+            if (
+                kw.find(".//gmd:MD_KeywordTypeCode", namespaces=namespaces).text
+                == "theme"
+            ):
+                keywords += [
+                    item.text
+                    for item in kw.findall(
+                        ".//gmd:keyword/gco:CharacterString", namespaces=namespaces
+                    )
+                ]
+        if not keywords:
+            logger.warning("No keywords found in metadata")
+        return keywords
+
+    def _get_eov_from_keywords(self) -> list[str]:
+        """Extract EOV from keywords."""
+
+        def _has_keyword(keyword):
+            """Return the eovs that have the keyword."""
+            return [
+                eov
+                for eov, keywords in EOV_TO_KEYWORDS.items()
+                if keywords and keyword in keywords
+            ]
+
+        keywords = self._get_keywords()
+        eovs = []
+        for keyword in keywords:
+            eovs += _has_keyword(keyword)
+        if not eovs:
+            logger.warning("No EOV found in keywords: {}", keywords)
+        return list(set(eovs))
+
     def to_cioos(
         self,
         userID: str,
@@ -190,7 +233,6 @@ class PDC_ISO:
         identifier: uuid.UUID,
     ) -> dict:
         """Parse a Polar Data Catalogue FGDC metadata record."""
-        record_uuid = uuid.uuid4()
 
         return {
             "userID": userID,
@@ -241,10 +283,12 @@ class PDC_ISO:
             "distribution": distribution,
             "doiCreationStatus": "",
             "edition": self.get(".//gmd:version"),
-            "eov": eov,
+            "eov": self._get_eov_from_keywords(),
             "filename": filename,
             "history": [],  # Related to Lineage
-            "identifier": str(identifier),  # example  "147b8485-a0b4-450d-8847-de51158b04ec"
+            "identifier": str(
+                identifier
+            ),  # example  "147b8485-a0b4-450d-8847-de51158b04ec"
             "keywords": {
                 "en": list(
                     set(
@@ -307,13 +351,13 @@ class PDC_ISO:
             "associated_resources": [
                 {
                     "association_type": "IsIdenticalTo",
-                    "association_type_iso":"crossReference",
+                    "association_type_iso": "crossReference",
                     "authority": "URL",
                     "code": self.get(".//gmd:dataSetURI/gco:CharacterString"),
                     "title": {
                         "en": "Polar Data Catalogue equivalent record",
                         "fr": "Enregistrement équivalent du Catalogue de données polaires",
-                    }
+                    },
                 }
             ],
         }
