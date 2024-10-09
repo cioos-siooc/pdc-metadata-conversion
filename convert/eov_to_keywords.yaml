@@ -1,59 +1,67 @@
-"Ocean surface stress":
+oceanSurfaceStress:
   - "Air-water exchange"
   - "Water-air gas exchange"
-"Sea ice":
+seaIce:
+airWaterExchange:
+  - "Air-water exchange"
+  - "Water-air gas exchange"
+seaIce:
   - "Ice"
   - "Iceberg"
   - "Ice island"
   - "Ice drift"
-"Sea surface height":
-"Sea surface temperature":
-"Subsurface temperature":
+seaSurfaceHeight:
+seaSurfaceTemperature:
+subSurfaceTemperature:
   - "Temperature"
   - "CTD profiles"
-"Surface currents":
-"Subsurface currents":
-"Sea surface salinity":
-"Subsurface salinity":
+surfaceCurrents:
+subSurfaceCurrents:
+seaSurfaceSalinity:
+subSurfaceSalinity:
   - "Salinity"
   - "CTD profiles"
   - "Conductivity"
-"Ocean surface heat flux":
-"Ocean bottom pressure":
-"Turbulent diapycnal fluxes (*pilot)":
-"Oxygen":
+oceanSurfaceHeatFlux:
+oceanBottomPressure:
+turbulentDiapycnalFluxesPilot:
+oxygen:
   - "Oxygen"
-"Nutrients":
+nutrients:
   - "Nitrogen"
-"Inorganic carbon":
+inorganicCarbon:
   - "Particulate organic carbon"
   - "Carbon fluxes"
-"Transient tracers":
+transientTracers:
   - "Contaminants"
   - "Bromine oxide"
   - "Mercury"
   - "Methylmercury"
-"Particulate matter":
+particulateMatter:
   - "Transmittance"
-"Nitrous oxide":
-"Stable carbon isotopes":
-"Dissolved organic carbon	Phytoplankton biomass and diversity":
+nitrousOxide:
+stableCarbonIsotopes:
+dissolvedOrganicCarbonPhytoplanktonBiomassAndDiversity:
   - "Chlorophyll"
   - "Dissolved organic carbon (DOC)"
   - "Phytoplankton"
-"Zooplankton biomass and diversity":
+zooplanktonBiomassAndDiversity:
   - "Zooplankton"
-"Fish abundance and distribution":
+fishAbundanceAndDistribution:
   - "Fishes"
   - "Arctic Cod"
-"Marine turtles, birds, mammals abundance and distribution":
-"Hard coral cover and composition":
-"Seagrass cover and composition":
-"Macroalgal canopy cover and composition":
-"Mangrove cover and composition":
-"Microbe biomass and diversity (*pilot)":
-"Invertebrate abundance and distribution (*pilot)":
-"Ocean Colour":
+marineTurtlesBirdsMammalsAbundanceAndDistribution:
+hardCoralCoverAndComposition:
+seagrassCoverAndComposition:
+macroalgalCanopyCoverAndComposition:
+mangroveCoverAndComposition:
+microbeBiomassAndDiversityPilot:
+invertebrateAbundanceAndDistributionPilot:
+oceanColour:
   - "Fluorescence"
   - "Chlorophyll"
-"Ocean sound":
+oceanSound:
+  - "Iceberg"
+  - "Ice island"
+  - "Ice drift"
+  - "Ice"
