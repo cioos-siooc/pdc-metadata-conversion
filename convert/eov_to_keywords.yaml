@@ -1,7 +1,6 @@
 oceanSurfaceStress:
   - "Air-water exchange"
   - "Water-air gas exchange"
-seaIce:
 airWaterExchange:
   - "Air-water exchange"
   - "Water-air gas exchange"
@@ -61,7 +60,4 @@ oceanColour:
   - "Fluorescence"
   - "Chlorophyll"
 oceanSound:
-  - "Iceberg"
-  - "Ice island"
-  - "Ice drift"
-  - "Ice"
+
