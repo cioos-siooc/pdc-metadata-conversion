@@ -1,29 +1,23 @@
-[tool.poetry]
-name = "pdc-to-cioos-metadata-converter"
+[project]
+name = "pdc-metadata-conversion"
 version = "0.1.0"
-description = ""
-authors = ["Jessy Barrette <30420025+JessyBarrette@users.noreply.github.com>"]
+description = "Add your description here"
 readme = "README.md"
-packages = [
-    { include = "convert" }
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.1.7",
+    "loguru>=0.7.2",
+    "lxml>=5.3.0",
+    "openpyxl>=3.1.5",
+    "pandas>=2.2.3",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.3",
+    "tabulate>=0.9.0",
+    "tqdm>=4.66.5",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-lxml = "^5.3.0"
-click = "^8.1.7"
-loguru = "^0.7.2"
-openpyxl = "^3.1.5"
-requests = "^2.32.3"
-pandas = "^2.2.3"
-tqdm = "^4.66.5"
-pyyaml = "^6.0.2"
-
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.3"
-ruff = "^0.6.7"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.3",
+    "ruff>=0.7.1",
+]

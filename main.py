@@ -56,29 +56,53 @@ def cli():
 
 @cli.command()
 @click.argument("ccins", nargs=-1)
-@click.option("--output-dir", type=click.Path(), required=True)
+@click.option("--output-dir", type=click.Path(), required=True, default="output")
 @click.option("--xml-type", type=click.Choice(["fgdc", "iso"]), required=True)
 @click.option("--overwrite", is_flag=True, default=False)
-def download(ccins, output_dir, xml_type, overwrite=False):
+@click.option("--sheet-name", type=str, default="Revision PDC")
+@click.option("--ccin-column", type=str, default="ccin_ref_number")
+def download(ccins, output_dir, xml_type, overwrite, sheet_name, ccin_column):
     """Download the metadata for the specified CCINs."""
 
     output_dir = Path(output_dir)
-    if ccins == ():
-        logger.info("Retrieve ccins from the excel file")
-        ccins = load_pdc_records().index
+    output_dir.mkdir(parents=True, exist_ok=True)
 
+    if ccins == ():
+        logger.error("Retrieve ccins from the excel file")
+    elif (
+        len(ccins) == 1
+        and isinstance(ccins[0], str)
+        and Path(ccins[0]).exists()
+        and ccins[0].endswith(".xlsx")
+    ):
+        ccins = pd.read_excel(ccins[0], sheet_name=sheet_name)[ccin_column].tolist()
+    else:
+        ccins = list(ccins)
+    logger.info("Downloading metadata for {} records", len(ccins))
+    failed_ccins = []
     for ccin in tqdm(ccins, desc="Downloading metadata"):
         output_file = output_dir / f"{ccin}_{xml_type}.xml"
         if output_file.exists() and not overwrite:
             continue
-        response = requests.get(
-            f"https://www.polardata.ca/pdcsearch/xml/fgdc/{ccin}_{xml_type}.xml"
-        )
+        url = f"https://www.polardata.ca/pdcsearch/xml/{xml_type}/{ccin}_{xml_type}.xml"
+        response = requests.get(url)
         if response.status_code != 200:
-            logger.warning("Failed to download FGDC metadata for record: {}", ccin)
+            logger.warning(
+                "Failed to download {}:{} metadata for record: status={} {}",
+                ccin,
+                xml_type,
+                response.status_code,
+                url,
+            )
+            failed_ccins.append({"ccin": ccin, "xml_url": url})
             continue
 
         output_file.write_text(response.text)
+    if failed_ccins:
+        logger.warning("Failed to download metadata for {} records", len(failed_ccins))
+        pd.DataFrame(failed_ccins).to_markdown(
+            output_dir / "failed_ccins.md", index=False
+        )
 
 
 def from_fgdc(

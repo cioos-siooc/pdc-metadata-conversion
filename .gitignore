@@ -2,3 +2,5 @@
 *.pyc
 data
 *.json
+*.xlsx
+output
