@@ -70,7 +70,7 @@ def _contact_name(author_text) -> list[str]:
     if "," in author_text:
         author_text = " ".join(author_text.split(",")[::-1])
 
-    names = re.split("\s+", author_text)
+    names = re.split(r"\s+", author_text)
     names = [name for name in names if name]
     if " ".join(names) in NAMES_MAPPING:
         names = [NAMES_MAPPING[" ".join(names)]]

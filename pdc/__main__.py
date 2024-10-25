@@ -12,8 +12,8 @@ import requests
 from loguru import logger
 from tqdm import tqdm
 
-from convert import fgdc
-from convert.iso import PDC_ISO
+from pdc import fgdc
+from pdc.iso import PDC_ISO
 
 PDC_FGDC_URL = "https://www.polardata.ca/pdcsearch/xml/fgdc/13172_fgdc.xml"
 logger_format = (
@@ -261,6 +261,32 @@ def convert(xml_format, files, local_dir, output_file, user, shares, append_to):
 
     logger.debug("Writing output to file: {}", output_file)
     Path(output_file).write_text(json.dumps(output, indent=2))
+
+
+@cli.command()
+@click.option("--files", type=str, required=True)
+@click.option("--attribute", type=str, required=True)
+@click.option("--output-type", type=str, required=True, default='set')
+@click.option("--output-file", type=click.Path(), required=False)
+def inspect(files, attribute, output_type, output_file):
+    """Inspect metadata attributes from xml files."""
+
+    files = glob(files)
+    results = {}
+    for file in files:
+        pdc_iso = PDC_ISO(file)
+        if attribute == "keywords":
+            results[file] = pdc_iso._get_keywords()
+
+    if output_type == 'set':
+        results = list(set(subitem for item in results.values() for subitem in item))
+    logger.info("Results {} keywords: {}",len(results), results)
+    if output_file:
+        with open(output_file, "w") as f:
+            json.dump(results, f)
+    return results
+
+            
 
 
 if __name__ == "__main__":

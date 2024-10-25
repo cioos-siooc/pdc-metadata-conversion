@@ -1,23 +1,29 @@
-[project]
+[tool.poetry]
 name = "pdc-metadata-conversion"
 version = "0.1.0"
-description = "Add your description here"
+description = ""
+authors = ["Jessy Barrette <30420025+JessyBarrette@users.noreply.github.com.>"]
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "click>=8.1.7",
-    "loguru>=0.7.2",
-    "lxml>=5.3.0",
-    "openpyxl>=3.1.5",
-    "pandas>=2.2.3",
-    "pyyaml>=6.0.2",
-    "requests>=2.32.3",
-    "tabulate>=0.9.0",
-    "tqdm>=4.66.5",
+packages = [
+    { include = "pdc" }
 ]
 
-[tool.uv]
-dev-dependencies = [
-    "pytest>=8.3.3",
-    "ruff>=0.7.1",
-]
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+loguru = "^0.7.2"
+lxml = "^5.3.0"
+openpyxl = "^3.1.5"
+pandas = "^2.2.3"
+PyYAML = "^6.0.2"
+requests = "^2.32.3"
+tabulate = "^0.9.0"
+tqdm = "^4.66.5"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+ruff = "^0.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
