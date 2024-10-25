@@ -266,7 +266,7 @@ def convert(xml_format, files, local_dir, output_file, user, shares, append_to):
 @cli.command()
 @click.option("--files", type=str, required=True)
 @click.option("--attribute", type=str, required=True)
-@click.option("--output-type", type=str, required=True, default='set')
+@click.option("--output-type", type=str, required=True, default="set")
 @click.option("--output-file", type=click.Path(), required=False)
 def inspect(files, attribute, output_type, output_file):
     """Inspect metadata attributes from xml files."""
@@ -278,15 +278,13 @@ def inspect(files, attribute, output_type, output_file):
         if attribute == "keywords":
             results[file] = pdc_iso._get_keywords()
 
-    if output_type == 'set':
+    if output_type == "set":
         results = list(set(subitem for item in results.values() for subitem in item))
-    logger.info("Results {} keywords: {}",len(results), results)
+    logger.info("Results {} keywords: {}", len(results), results)
     if output_file:
         with open(output_file, "w") as f:
             json.dump(results, f)
     return results
-
-            
 
 
 if __name__ == "__main__":

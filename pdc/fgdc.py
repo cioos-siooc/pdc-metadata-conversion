@@ -96,7 +96,9 @@ def main(
     sharedWith: list[str],
 ) -> dict:
     """Parse a Polar Data Catalogue FGDC metadata record."""
-    logger.warning("The FGDC metadata is incomplete and missine some parameters. We recommand using the ISO xml format instead.")
+    logger.warning(
+        "The FGDC metadata is incomplete and missine some parameters. We recommand using the ISO xml format instead."
+    )
     tree = ET.parse(file)
 
     return {
