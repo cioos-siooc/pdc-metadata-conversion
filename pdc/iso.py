@@ -292,7 +292,7 @@ class PDC_ISO:
             "dateRevised": datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
             "distribution": distribution,
             "doiCreationStatus": doiStatusCreation,
-            "edition": self.get(".//gmd:version"),
+            "edition": self.get(".//gmd:version") or "1.0",
             "eov": self._get_eov_from_keywords(),
             "filename": filename,
             "history": [],  # Related to Lineage
