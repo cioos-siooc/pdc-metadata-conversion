@@ -2,7 +2,7 @@ import re
 import uuid
 import yaml
 from pathlib import Path
-
+from datetime import datetime, timezone
 from loguru import logger
 from lxml import etree as ET
 
@@ -37,6 +37,11 @@ ROLES_MAPPING = {
 
 EOV_TO_KEYWORDS = yaml.safe_load(open(Path(__file__).parent / "eov_to_keywords.yaml"))
 
+
+def _parse_date(date: str) -> str:
+    """Parse a date."""
+    return datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc).isoformat().replace("+00:00","Z")
+    
 
 def _apply_role_mapping(role: str) -> str:
     """Apply a mapping to a role."""
@@ -272,14 +277,13 @@ class PDC_ISO:
                     # TODO missing owner role
                 ]
             ),
-            # TODO Convert all dates to ISO 8601 format
-            "created": self.get(".//pubdate"),
+            "created":  _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
             "datasetIdentifier": "https://doi.org/10.21963/"
             + self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[-1],
-            "dateStart": self.get(".//gml:beginPosition"),
-            "dateEnd": self.get(".//gml:endPosition"),
-            "datePublished": self.get(".//gmd:dateStamp/gco:Date"),
-            "dateRevised": self.get(".//revdate"),
+            "dateStart": _parse_date(self.get(".//gml:beginPosition")),
+            "dateEnd": _parse_date(self.get(".//gml:endPosition")),
+            "datePublished": _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
+            "dateRevised": datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
             "distribution": distribution,
             "doiCreationStatus": "",
             "edition": self.get(".//gmd:version"),
@@ -342,7 +346,7 @@ class PDC_ISO:
             "resourceType": ressourceType,  # Projects in form
             "sharedWith": {person: True for person in shares},
             "status": status,
-            "timeFirstPublished": self.get(".//gmd:dateStamp/gco:Date"),
+            "timeFirstPublished": _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
             "vertical": {},
             "noVerticalExtent": True,
             "verticalExtentDirection": "depthPositive",
