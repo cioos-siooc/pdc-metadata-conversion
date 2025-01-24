@@ -40,8 +40,11 @@ EOV_TO_KEYWORDS = yaml.safe_load(open(Path(__file__).parent / "eov_to_keywords.y
 
 def _parse_date(date: str) -> str:
     """Parse a date."""
-    if not date:
+    if not date or date == "Undefined":
         return
+    elif not re.match(r"\d{4}-\d{2}-\d{2}", date):
+        logger.warning("Invalid date: {}", date)
+        return date
     return datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc).isoformat().replace("+00:00","Z")
     
 
