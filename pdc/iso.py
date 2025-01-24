@@ -236,6 +236,7 @@ class PDC_ISO:
         distribution: list[dict],
         eov: list[str],
         identifier: uuid.UUID,
+        doiStatusCreation: str= "findable"
     ) -> dict:
         """Parse a Polar Data Catalogue FGDC metadata record."""
 
@@ -285,7 +286,7 @@ class PDC_ISO:
             "datePublished": _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
             "dateRevised": datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
             "distribution": distribution,
-            "doiCreationStatus": "",
+            "doiCreationStatus": doiStatusCreation,
             "edition": self.get(".//gmd:version"),
             "eov": self._get_eov_from_keywords(),
             "filename": filename,
