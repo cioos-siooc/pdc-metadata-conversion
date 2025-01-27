@@ -64,7 +64,7 @@ def _apply_mapping(mapping: dict, value: str) -> str:
     """Apply a mapping to a value."""
     result = mapping.get(value)
     if result is None:
-        logger.warning("Mapping not found for value: {}", value)
+        logger.warning("Mapping not found for value: {}[{}]", mapping, value)
         return None
     return result
 
