@@ -16,6 +16,7 @@ subSurfaceTemperature:
   - "CTD profiles"
 surfaceCurrents:
 subSurfaceCurrents:
+  - "Ocean currents"
 seaSurfaceSalinity:
 subSurfaceSalinity:
   - "Salinity"
@@ -36,6 +37,11 @@ transientTracers:
   - "Bromine oxide"
   - "Mercury"
   - "Methylmercury"
+  - "Organophosphate flame retardants"
+  - "DDT"
+  - "PCBs"
+  - "Bioaccumulation"
+  - "Perfluoro contaminants"
 particulateMatter:
   - "Transmittance"
 nitrousOxide:
@@ -44,6 +50,10 @@ dissolvedOrganicCarbonPhytoplanktonBiomassAndDiversity:
   - "Chlorophyll"
   - "Dissolved organic carbon (DOC)"
   - "Phytoplankton"
+  - "Organic carbon"
+  - "Dimethylsulfide (DMS)"
+  - "Species composition"
+  - "Megazoobenthos"
 zooplanktonBiomassAndDiversity:
   - "Zooplankton"
 fishAbundanceAndDistribution:
