@@ -67,6 +67,8 @@ fishAbundanceAndDistribution:
   - "Arctic Cod"
   - "Fish larvae"
 marineTurtlesBirdsMammalsAbundanceAndDistribution:
+  - "Seals"
+  - "Marine mammals"
 hardCoralCoverAndComposition:
   - "Corals"
 seagrassCoverAndComposition:
