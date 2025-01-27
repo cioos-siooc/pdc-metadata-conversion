@@ -225,6 +225,7 @@ class PDC_ISO:
             eovs += _has_keyword(keyword)
         if not eovs:
             logger.warning("No EOV found in keywords: {}", keywords)
+            eovs = ["Other"]
         return list(set(eovs))
 
     def to_cioos(
