@@ -335,14 +335,8 @@ class PDC_ISO:
                 "polygon": "",
             },
             "metadataScope": "Dataset",  # TODO map to record type
-            "noPlatform": False,
-            "platforms": [
-                {
-                    "description": {"en": "CCGS Amundsen", "fr": "NGCC Amundsen"},
-                    "id": "18DL",
-                    "type": "ship",
-                }
-            ],
+            "noPlatform": True,
+            "platforms": [],
             "noTaxa": True,
             "progress": _apply_mapping(
                 MAP_ISO_STATUS, self.get(".//gmd:status/gmd:MD_ProgressCode")
