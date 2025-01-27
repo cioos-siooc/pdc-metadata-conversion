@@ -9,6 +9,10 @@ seaIce:
   - "Iceberg"
   - "Ice island"
   - "Ice drift"
+  - "Sea ice"
+  - "Ice thickness"
+  - "Ice pack motion"
+  - "Cryosphere"
 seaSurfaceHeight:
 seaSurfaceTemperature:
 subSurfaceTemperature:
@@ -32,6 +36,7 @@ nutrients:
 inorganicCarbon:
   - "Particulate organic carbon"
   - "Carbon fluxes"
+  - "Carbon dioxide"
 transientTracers:
   - "Contaminants"
   - "Bromine oxide"
@@ -54,18 +59,22 @@ dissolvedOrganicCarbonPhytoplanktonBiomassAndDiversity:
   - "Dimethylsulfide (DMS)"
   - "Species composition"
   - "Megazoobenthos"
+  - "Ice algae"
 zooplanktonBiomassAndDiversity:
   - "Zooplankton"
 fishAbundanceAndDistribution:
   - "Fishes"
   - "Arctic Cod"
+  - "Fish larvae"
 marineTurtlesBirdsMammalsAbundanceAndDistribution:
 hardCoralCoverAndComposition:
+  - "Corals"
 seagrassCoverAndComposition:
 macroalgalCanopyCoverAndComposition:
 mangroveCoverAndComposition:
 microbeBiomassAndDiversityPilot:
 invertebrateAbundanceAndDistributionPilot:
+  - "Invertebrates"
 oceanColour:
   - "Fluorescence"
   - "Chlorophyll"
