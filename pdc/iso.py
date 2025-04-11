@@ -168,6 +168,39 @@ class PDC_ISO:
                     ).text
                 )
         return places
+    
+    def _get_suggested_citation_contacts(self) -> list[dict]:
+        """Extract the contacts from the citation."""
+        contacts = []
+        citation = self.tree.findall(
+            ".//gmd:citation/gmd:CI_Citation/gmd:otherCitationDetails/gco:CharacterString", namespaces=namespaces
+        )
+        if not citation:
+            logger.warning("No citation found in metadata")
+            return contacts	
+        coauthors = citation[0].text.split("(")
+        if not len(coauthors) > 1:
+            logger.warning("No coauthors found in citation: {}", citation[0].text)
+            return contacts
+
+        coauthors = re.sub(r"\s+\&\s+|\s+and\s+",'',coauthors[0])
+
+        potential_coauthors = []
+        coauthors_items = coauthors.split(",")
+        for index, item in enumerate(coauthors_items):
+            item = item.strip()
+            if re.match(r"\w\.", item) and potential_coauthors and index > 0:
+                # If the item is a name with initials, add it to the last contact
+                potential_coauthors[-1]['givenNames'] = item
+            else:
+                # Add as coauthor
+                potential_coauthors.append({
+                    "lastName": item,
+                    "role": ["coauthor"],
+                    "inCitation": True,
+                })
+        return potential_coauthors
+
 
     def _combine_contacts(self, contacts) -> dict:
         """Combine macthing contacts and join roles"""
@@ -246,6 +279,19 @@ class PDC_ISO:
     ) -> dict:
         """Parse a Polar Data Catalogue FGDC metadata record."""
 
+        # Verify if contacts match the suggested citation
+        citation_contacts = self._get_suggested_citation_contacts()
+        responsible_parties = [
+            self._create_contact(contact, in_citation=True)
+            for contact in self.tree.findall(
+                ".//gmd:CI_Citation/gmd:citedResponsibleParty",
+                namespaces=namespaces,
+            )
+        ]
+        if len(citation_contacts) > len(responsible_parties):
+            logger.warning("Citation contacts ({} contacts) do not match the responsible parties ({} contacts)", len(citation_contacts), len(responsible_parties))
+
+
         return {
             "userID": userID,
             # "organization": "",
@@ -274,14 +320,7 @@ class PDC_ISO:
                         False,
                         ["distributor"],
                     ),
-                    *[
-                        self._create_contact(contact, in_citation=True)
-                        for contact in self.tree.findall(
-                            ".//gmd:CI_Citation/gmd:citedResponsibleParty",
-                            namespaces=namespaces,
-                        )
-                    ],
-                    # TODO missing owner role
+                    *responsible_parties,
                 ]
             ),
             "created":  _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
@@ -294,7 +333,7 @@ class PDC_ISO:
             "distribution": distribution,
             "doiCreationStatus": doiStatusCreation,
             "edition": self.get(".//gmd:version") or "1.0",
-            "eov": self._get_eov_from_keywords(),
+            "eov": eov or self._get_eov_from_keywords(),
             "filename": filename,
             "history": [],  # Related to Lineage
             "identifier": str(
