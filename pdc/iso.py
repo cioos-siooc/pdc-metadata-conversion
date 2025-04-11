@@ -181,13 +181,14 @@ class PDC_ISO:
             ".//gmd:citation/gmd:CI_Citation/gmd:otherCitationDetails/gco:CharacterString",
             namespaces=namespaces,
         )
-        if not citation or "unpublished" in citation[0].text.lower():
+        citation = citation[0].text if citation else None
+        if not citation or "unpublished" in citation:
             logger.info("No citation found in metadata: {}", citation)
-            return contacts, citation[0].text if citation else None
-        coauthors = re.split(r"\(|\d{4}\.", citation[0].text)
+            return contacts, citation
+        coauthors = re.split(r"\(|\d{4}\.", citation)
         if not len(coauthors) > 1:
             logger.warning("No coauthors found in citation: {}", citation[0].text)
-            return contacts, citation[0].text
+            return contacts, citation
 
         coauthors = re.sub(r"\s+\&\s+|\s+and\s+", "", coauthors[0])
 
@@ -207,7 +208,7 @@ class PDC_ISO:
                         "inCitation": True,
                     }
                 )
-        return potential_coauthors, citation[0].text
+        return potential_coauthors, citation
 
     def _combine_contacts(self, contacts) -> dict:
         """Combine macthing contacts and join roles"""
