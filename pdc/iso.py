@@ -174,7 +174,7 @@ class PDC_ISO:
                 )
         return places
 
-    def _get_suggested_citation_contacts(self) -> tuple(list[dict], str):
+    def _get_suggested_citation_contacts(self) -> tuple[list[dict], str]:
         """Extract the contacts from the citation."""
         contacts = []
         citation = self.tree.findall(
