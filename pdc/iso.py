@@ -45,8 +45,13 @@ def _parse_date(date: str) -> str:
     elif not re.match(r"\d{4}-\d{2}-\d{2}", date):
         logger.warning("Invalid date: {}", date)
         return date
-    return datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc).isoformat().replace("+00:00","Z")
-    
+    return (
+        datetime.strptime(date, "%Y-%m-%d")
+        .replace(tzinfo=timezone.utc)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
 
 def _apply_role_mapping(role: str) -> str:
     """Apply a mapping to a role."""
@@ -168,22 +173,23 @@ class PDC_ISO:
                     ).text
                 )
         return places
-    
-    def _get_suggested_citation_contacts(self) -> list[dict]:
+
+    def _get_suggested_citation_contacts(self) -> tuple(list[dict], str):
         """Extract the contacts from the citation."""
         contacts = []
         citation = self.tree.findall(
-            ".//gmd:citation/gmd:CI_Citation/gmd:otherCitationDetails/gco:CharacterString", namespaces=namespaces
+            ".//gmd:citation/gmd:CI_Citation/gmd:otherCitationDetails/gco:CharacterString",
+            namespaces=namespaces,
         )
         if not citation or "unpublished" in citation[0].text.lower():
-            logger.info("No citation found in metadata")
-            return contacts	
-        coauthors = re.split(r"\(|\d{4}\.",citation[0].text)
+            logger.info("No citation found in metadata: {}", citation)
+            return contacts, citation[0].text if citation else None
+        coauthors = re.split(r"\(|\d{4}\.", citation[0].text)
         if not len(coauthors) > 1:
             logger.warning("No coauthors found in citation: {}", citation[0].text)
-            return contacts
+            return contacts, citation[0].text
 
-        coauthors = re.sub(r"\s+\&\s+|\s+and\s+",'',coauthors[0])
+        coauthors = re.sub(r"\s+\&\s+|\s+and\s+", "", coauthors[0])
 
         potential_coauthors = []
         coauthors_items = coauthors.split(",")
@@ -191,16 +197,17 @@ class PDC_ISO:
             item = item.strip()
             if re.match(r"\w\.", item) and potential_coauthors and index > 0:
                 # If the item is a name with initials, add it to the last contact
-                potential_coauthors[-1]['givenNames'] = item
+                potential_coauthors[-1]["givenNames"] = item
             else:
                 # Add as coauthor
-                potential_coauthors.append({
-                    "lastName": item,
-                    "role": ["coauthor"],
-                    "inCitation": True,
-                })
-        return potential_coauthors
-
+                potential_coauthors.append(
+                    {
+                        "lastName": item,
+                        "role": ["coauthor"],
+                        "inCitation": True,
+                    }
+                )
+        return potential_coauthors, citation[0].text
 
     def _combine_contacts(self, contacts) -> dict:
         """Combine macthing contacts and join roles"""
@@ -275,12 +282,12 @@ class PDC_ISO:
         distribution: list[dict],
         eov: list[str],
         identifier: uuid.UUID,
-        doiStatusCreation: str= "findable"
+        doiStatusCreation: str = "findable",
     ) -> dict:
         """Parse a Polar Data Catalogue FGDC metadata record."""
 
         # Verify if contacts match the suggested citation
-        citation_contacts = self._get_suggested_citation_contacts()
+        citation_contacts, citation = self._get_suggested_citation_contacts()
         responsible_parties = [
             self._create_contact(contact, in_citation=True)
             for contact in self.tree.findall(
@@ -289,8 +296,12 @@ class PDC_ISO:
             )
         ]
         if len(citation_contacts) > len(responsible_parties):
-            logger.warning("Citation contacts ({} contacts) do not match the responsible parties ({} contacts)", len(citation_contacts), len(responsible_parties))
-
+            logger.warning(
+                "Citation contacts ({} contacts) do not match the responsible parties ({} contacts): citation={}",
+                len(citation_contacts),
+                len(responsible_parties),
+                citation,
+            )
 
         return {
             "userID": userID,
@@ -323,13 +334,15 @@ class PDC_ISO:
                     *responsible_parties,
                 ]
             ),
-            "created":  _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
+            "created": _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
             "datasetIdentifier": "https://doi.org/10.21963/"
             + self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[-1],
             "dateStart": _parse_date(self.get(".//gml:beginPosition")),
             "dateEnd": _parse_date(self.get(".//gml:endPosition")),
             "datePublished": _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
-            "dateRevised": datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
+            "dateRevised": datetime.now(timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z"),
             "distribution": distribution,
             "doiCreationStatus": doiStatusCreation,
             "edition": self.get(".//gmd:version") or "1.0",
