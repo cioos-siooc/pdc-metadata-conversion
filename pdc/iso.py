@@ -363,6 +363,7 @@ class PDC_ISO:
                         for item in kw.text.split(",")
                     )
                 ),
+                "fr": []
             },
             "language": _apply_mapping(
                 MAP_ISO_LANGUAGE, self.get(".//gmd:language/gco:CharacterString")
