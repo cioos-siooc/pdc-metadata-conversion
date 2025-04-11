@@ -178,7 +178,7 @@ class PDC_ISO:
         if not citation or "unpublished" in citation[0].text.lower():
             logger.info("No citation found in metadata")
             return contacts	
-        coauthors = citation[0].text.split("(|\d{4}\.")
+        coauthors = re.split(r"(|\d{4}\.",citation[0].text)
         if not len(coauthors) > 1:
             logger.warning("No coauthors found in citation: {}", citation[0].text)
             return contacts
