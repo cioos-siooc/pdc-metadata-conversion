@@ -175,7 +175,7 @@ class PDC_ISO:
         citation = self.tree.findall(
             ".//gmd:citation/gmd:CI_Citation/gmd:otherCitationDetails/gco:CharacterString", namespaces=namespaces
         )
-        if not citation or "unpublished" in citation.lower():
+        if not citation or "unpublished" in citation[0].text.lower():
             logger.info("No citation found in metadata")
             return contacts	
         coauthors = citation[0].text.split("(|\d{4}\.")
