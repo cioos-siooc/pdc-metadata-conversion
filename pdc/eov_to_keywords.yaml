@@ -28,7 +28,7 @@ subSurfaceSalinity:
   - "Conductivity"
 oceanSurfaceHeatFlux:
 oceanBottomPressure:
-turbulentDiapycnalFluxesPilot:
+turbulentDiapycnalFluxes:
 oxygen:
   - "Oxygen"
 nutrients:
@@ -73,8 +73,9 @@ hardCoralCoverAndComposition:
 seagrassCoverAndComposition:
 macroalgalCanopyCoverAndComposition:
 mangroveCoverAndComposition:
-microbeBiomassAndDiversityPilot:
-invertebrateAbundanceAndDistributionPilot:
+microbeBiomassAndDiversity:
+  - "Bateria"
+invertebrateAbundanceAndDistribution:
   - "Invertebrates"
 oceanColour:
   - "Fluorescence"
