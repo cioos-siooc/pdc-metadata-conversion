@@ -305,7 +305,7 @@ class PDC_ISO:
                 namespaces=namespaces,
             )
         ]
-        if len(citation_contacts) > len(responsible_parties):
+        if len(citation_contacts) > len(responsible_parties) and not "et al." in citation:
             logger.warning(
                 "Citation contacts ({} contacts) do not match the responsible parties ({} contacts): citation={}",
                 len(citation_contacts),
