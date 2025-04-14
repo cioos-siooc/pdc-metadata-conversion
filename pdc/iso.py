@@ -23,7 +23,7 @@ MAP_ISO_STATUS = {
 }
 
 NAMES_MAPPING = {
-    "Polar Data Catalogue": "Polar Data Catalogue",
+    "Polar Data Catalogue": ["Polar Data Catalogue",""],
 }
 
 ROLES_MAPPING = {
@@ -75,7 +75,13 @@ def _apply_mapping(mapping: dict, value: str) -> str:
 
 
 def _contact_name(author_text:str, name_mapping:dict =NAMES_MAPPING) -> list[str]:
-    """Get the name of a contact."""
+    """Get the name of a contact.
+    
+    Attempt to split the name into given and last names. 
+    If the name is in the mapping, return the mapped name.
+    If the name has more than two parts, log a warning.
+
+    """
     if author_text is None:
         logger.debug("No contact name found")
         return [""]
@@ -88,7 +94,7 @@ def _contact_name(author_text:str, name_mapping:dict =NAMES_MAPPING) -> list[str
     names = re.split(r"\s+", author_text)
     names = [name for name in names if name]
     if " ".join(names) in name_mapping:
-        names = [name_mapping[" ".join(names)]]
+        names = name_mapping[" ".join(names)]
     elif len(names) > 2:
         logger.warning("Name has more than two parts: {}", names)
     else:
