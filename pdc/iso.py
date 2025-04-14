@@ -74,7 +74,7 @@ def _apply_mapping(mapping: dict, value: str) -> str:
     return result
 
 
-def _contact_name(author_text) -> list[str]:
+def _contact_name(author_text:str, name_mapping:dict =NAMES_MAPPING) -> list[str]:
     """Get the name of a contact."""
     if author_text is None:
         logger.debug("No contact name found")
@@ -87,7 +87,7 @@ def _contact_name(author_text) -> list[str]:
 
     names = re.split(r"\s+", author_text)
     names = [name for name in names if name]
-    if " ".join(names) in NAMES_MAPPING:
+    if " ".join(names) in name_mapping:
         names = [NAMES_MAPPING[" ".join(names)]]
     elif len(names) > 2:
         logger.warning("Name has more than two parts: {}", names)
@@ -97,17 +97,18 @@ def _contact_name(author_text) -> list[str]:
 
 
 class PDC_ISO:
-    def __init__(self, file):
+    def __init__(self, file, name_mapping=NAMES_MAPPING):
         self.file = file
         self.tree = ET.parse(file)
+        self.name_mapping = name_mapping
 
     def _create_contact(
-        self, contact, in_citation: bool, role: list[str] = None
+        self, contact, in_citation: bool, role: list[str] = None,
     ) -> dict:
         """Add a contact to the metadata record."""
         logger.debug("Creating contact: {}", contact)
         names = _contact_name(
-            self.get(".//gmd:individualName/gco:CharacterString", contact)
+            self.get(".//gmd:individualName/gco:CharacterString", contact), self.name_mapping
         )
 
         return {
