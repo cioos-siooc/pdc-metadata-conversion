@@ -194,7 +194,10 @@ class PDC_ISO:
             return contacts, citation
         coauthors = re.split(r"\(|\d{4}\.", citation)
         if not len(coauthors) > 1:
-            logger.warning("No coauthors found in citation: {}", citation)
+            if "et al." in citation:
+                logger.info("No coauthors listed in citation: {}", citation)
+            else:
+                logger.warning("No coauthors found in citation: {}", citation)
             return contacts, citation
 
         coauthors = re.sub(r"\s+\&\s+|\s+and\s+", "", coauthors[0])
