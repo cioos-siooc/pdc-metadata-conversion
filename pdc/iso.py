@@ -88,7 +88,7 @@ def _contact_name(author_text:str, name_mapping:dict =NAMES_MAPPING) -> list[str
     names = re.split(r"\s+", author_text)
     names = [name for name in names if name]
     if " ".join(names) in name_mapping:
-        names = [NAMES_MAPPING[" ".join(names)]]
+        names = [name_mapping[" ".join(names)]]
     elif len(names) > 2:
         logger.warning("Name has more than two parts: {}", names)
     else:
