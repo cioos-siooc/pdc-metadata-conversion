@@ -51,17 +51,16 @@ particulateMatter:
   - "Transmittance"
 nitrousOxide:
 stableCarbonIsotopes:
-dissolvedOrganicCarbonPhytoplanktonBiomassAndDiversity:
-  - "Chlorophyll"
+dissolvedOrganicCarbon:
   - "Dissolved organic carbon (DOC)"
-  - "Phytoplankton"
   - "Organic carbon"
-  - "Dimethylsulfide (DMS)"
-  - "Species composition"
-  - "Megazoobenthos"
+phytoplanktonBiomassAndDiversity:
+  - "Chlorophyll"
+  - "Phytoplankton"
   - "Ice algae"
 zooplanktonBiomassAndDiversity:
   - "Zooplankton"
+  - "Megazoobenthos"
 fishAbundanceAndDistribution:
   - "Fishes"
   - "Arctic Cod"
