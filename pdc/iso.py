@@ -196,6 +196,8 @@ class PDC_ISO:
         coauthors_items = coauthors.split(",")
         for index, item in enumerate(coauthors_items):
             item = item.strip()
+            if not item:
+                continue
             if re.match(r"\w\.", item) and potential_coauthors and index > 0:
                 # If the item is a name with initials, add it to the last contact
                 potential_coauthors[-1]["givenNames"] = item
