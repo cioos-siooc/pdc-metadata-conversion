@@ -189,8 +189,7 @@ class PDC_ISO:
             namespaces=namespaces,
         )
         citation = citation[0].text if citation else None
-        if not citation or "unpublished data" == citation.lower():
-            logger.info("No citation found in metadata: {}", citation)
+        if not citation or citation.lower() in ("unpublished data", "unpublished"):
             return contacts, citation
         coauthors = re.split(r"\(|\d{4}\.", citation)
         if not len(coauthors) > 1:
