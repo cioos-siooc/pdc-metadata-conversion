@@ -18,8 +18,10 @@ MAP_ISO_LANGUAGE = {
     "fra; CAN": "fr",
 }
 MAP_ISO_STATUS = {
-    "underDevelopment": "ongoing",
+    "underDevelopment": "underDevelopment",
+    "ongoing": "onGoing",
     "completed": "completed",
+    "planned": "planned",
 }
 
 NAMES_MAPPING = {
