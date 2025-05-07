@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 from pdc import fgdc
 from pdc.iso import PDC_ISO
+from pdc.translate import get_french_translated_cioos_record
 
 PDC_FGDC_URL = "https://www.polardata.ca/pdcsearch/xml/fgdc/13172_fgdc.xml"
 logger_format = (
@@ -234,7 +235,13 @@ def append_to_existing_records(append_to, records, shares):
     default="",
     help="Comma separated list of users to share the records with",
 )
-def convert(xml_format, files, local_dir, output_file, user, shares, append_to):
+@click.option(
+    "--translate",
+    is_flag=True,
+    default=False,
+    help="Translate the metadata to French"
+)
+def convert(xml_format, files, local_dir, output_file, user, shares, append_to, translate):
     """Convert PDC metadata to CIOOS Metadata Form."""
 
     shares = shares.split(",")
@@ -251,6 +258,10 @@ def convert(xml_format, files, local_dir, output_file, user, shares, append_to):
         records_shares[share] = {
             user: {recordID: {"shared": True} for recordID in records.keys()}
         }
+        # TODO add shares to record sharedWith field
+
+    if translate:
+        records = [get_french_translated_cioos_record(record) for record in records]
 
     if append_to:
         logger.debug("Appending records to existing records")

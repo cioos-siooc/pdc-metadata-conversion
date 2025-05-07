@@ -4,3 +4,4 @@ data
 *.json
 *.xlsx
 output
+.env
