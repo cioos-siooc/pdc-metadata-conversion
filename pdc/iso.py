@@ -290,7 +290,7 @@ class PDC_ISO:
         status: str,
         license: str,
         region: str,
-        project: list[str],
+        projects: list[str],
         ressourceType: list[str],
         shares: list[str],
         distribution: list[dict],
@@ -409,7 +409,7 @@ class PDC_ISO:
             "progress": _apply_mapping(
                 MAP_ISO_STATUS, self.get(".//gmd:status/gmd:MD_ProgressCode")
             ),
-            "project": project,
+            "projects": projects,
             "recordID": recordID,
             "region": region,
             "resourceType": ressourceType,  # Projects in form

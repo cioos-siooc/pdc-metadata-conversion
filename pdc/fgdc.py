@@ -94,6 +94,7 @@ def main(
     region: str,
     ressourceType: list[str],
     sharedWith: list[str],
+    projects: list[str] = [],
 ) -> dict:
     """Parse a Polar Data Catalogue FGDC metadata record."""
     logger.warning(
@@ -163,7 +164,7 @@ def main(
         ],
         "noTaxa": True,
         "progress": "onGoing",
-        "project": [],
+        "projects": projects,
         "recordID": recordID,
         "region": region,
         "resourceType": ressourceType,  # Projects in form

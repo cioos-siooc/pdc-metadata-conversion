@@ -170,7 +170,7 @@ def from_iso(
                 status="submitted",
                 license="CC-BY-4.0",
                 region="amundsen",
-                project=[],
+                projects=[],
                 ressourceType=["oceanographic"],
                 shares=shares,
                 distribution=[],
