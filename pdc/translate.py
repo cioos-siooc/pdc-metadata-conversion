@@ -3,6 +3,9 @@ import boto3
 import hashlib
 import json
 from loguru import logger
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 CACHE_FILE = os.getenv("TRANSLATION_CACHE","translation_cache.json")
