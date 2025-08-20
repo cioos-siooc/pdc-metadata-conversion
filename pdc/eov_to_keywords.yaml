@@ -82,3 +82,8 @@ oceanColour:
   - "Fluorescence"
   - "Chlorophyll"
 oceanSound:
+benthicInvertebrateAbundanceAndDistribution:
+  - "Benthic surveys"
+  - "Benthos"
+marineDebris:
+  - "Plastics"
