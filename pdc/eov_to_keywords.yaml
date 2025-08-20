@@ -29,6 +29,7 @@ subSurfaceSalinity:
 oceanSurfaceHeatFlux:
   - "Solar radiation"
   - "Photosynthetically available radiation (PAR)"
+  - "Radiation"
 oceanBottomPressure:
 turbulentDiapycnalFluxes:
 oxygen:
@@ -53,6 +54,7 @@ transientTracers:
 particulateMatter:
   - "Transmittance"
   - "Sediment fluxes"
+  - "Sediments"
 nitrousOxide:
 stableCarbonIsotopes:
 dissolvedOrganicCarbon:
