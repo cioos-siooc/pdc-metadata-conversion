@@ -310,6 +310,7 @@ class PDC_ISO:
         eov: list[str],
         identifier: uuid.UUID,
         doiStatusCreation: str = "findable",
+        doi_prefixes: list[str] = None,
     ) -> dict:
         """Parse a Polar Data Catalogue FGDC metadata record."""
 
@@ -364,7 +365,7 @@ class PDC_ISO:
             ),
             "created": _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
             "datasetIdentifier": self._get_doi(
-                self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[-1]
+                self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[-1], doi_prefixes
             ),
             "dateStart": _parse_date(self.get(".//gml:beginPosition")),
             "dateEnd": _parse_date(self.get(".//gml:endPosition")),
