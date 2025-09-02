@@ -5,6 +5,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 from loguru import logger
 from lxml import etree as ET
+import requests
 
 # Define the namespaces
 namespaces = {
@@ -281,6 +282,18 @@ class PDC_ISO:
             logger.warning("No EOV found in keywords: {}", keywords)
             eovs = ["other"]
         return list(set(eovs))
+    def _get_doi(self, ccin, doi_prefixes:list=None ) -> str:
+        if not ccin:
+            return ""
+        if not doi_prefixes:
+            doi_prefixes = ["10.21963"]
+
+        for prefix in doi_prefixes:
+            doi_url = f"https://doi.org/{prefix}/{ccin}"
+            response = requests.get(doi_url)
+            if response.status_code == 200:
+                return doi_url
+        return ""
 
     def to_cioos(
         self,
@@ -350,8 +363,9 @@ class PDC_ISO:
                 ]
             ),
             "created": _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
-            "datasetIdentifier": "https://doi.org/10.21963/"
-            + self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[-1],
+            "datasetIdentifier": self._get_doi(
+                self.get(".//gmd:dataSetURI/gco:CharacterString").split("=")[-1]
+            ),
             "dateStart": _parse_date(self.get(".//gml:beginPosition")),
             "dateEnd": _parse_date(self.get(".//gml:endPosition")),
             "datePublished": _parse_date(self.get(".//gmd:dateStamp/gco:Date")),
