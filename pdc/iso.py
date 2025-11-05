@@ -13,7 +13,7 @@ namespaces = {
     "gco": "http://www.isotc211.org/2005/gco",
     "gml": "http://www.opengis.net/gml",
 }
-ls 
+
 MAP_ISO_LANGUAGE = {
     "eng; CAN": "en",
     "fra; CAN": "fr",
