@@ -13,7 +13,7 @@ namespaces = {
     "gco": "http://www.isotc211.org/2005/gco",
     "gml": "http://www.opengis.net/gml",
 }
-
+ls 
 MAP_ISO_LANGUAGE = {
     "eng; CAN": "en",
     "fra; CAN": "fr",
@@ -379,7 +379,7 @@ class PDC_ISO:
             "eov": eov or self._get_eov_from_keywords(),
             "filename": filename,
             "history": [],  # Related to Lineage
-            "identifier": str(
+            "identifier": "ccin-" + str(
                 identifier
             ),  # example  "147b8485-a0b4-450d-8847-de51158b04ec"
             "keywords": {
