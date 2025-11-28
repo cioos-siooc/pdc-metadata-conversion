@@ -401,9 +401,9 @@ class PDC_ISO:
             "license": license,  # eg "CC-BY-4.0"
             "comments": {
                 "en": (
-                    "Purpose: "
+                    "## Purpose: "
                     + self.get(".//gmd:purpose/gco:CharacterString")
-                    + "\n\n Supplemental Information: "
+                    + "\n\n## Supplemental Information: "
                     + self.get(".//gmd:supplementalInformation/gco:CharacterString")
                 ),
             },
