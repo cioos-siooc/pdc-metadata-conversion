@@ -340,7 +340,7 @@ class PDC_ISO:
             },
             "abstract": {"en": self.get(".//gmd:abstract/gco:CharacterString")},
             "category": "dataset",  # TODO confirm this is related to the latest version of the schema
-            "comment": "",
+            "limitations": "",
             "contacts": self._combine_contacts(
                 [
                     self._create_contact(
@@ -399,7 +399,7 @@ class PDC_ISO:
             ),
             "lastEditedBy": {"displayName": "", "email": ""},
             "license": license,  # eg "CC-BY-4.0"
-            "limitations": {
+            "comments": {
                 "en": (
                     "Purpose: "
                     + self.get(".//gmd:purpose/gco:CharacterString")
