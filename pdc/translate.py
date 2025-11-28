@@ -96,7 +96,8 @@ def get_french_translated_cioos_record(record):
     logger.debug("Translating record: {}", record)
     record["title"] = _apply_french_transation(record["title"])
     record["abstract"] = _apply_french_transation(record["abstract"])
-    record["limitations"] = _apply_french_transation(record["limitations"])
+    record["limitations"] = _apply_french_transation(record.get("limitations"))
+    record["comments"] = _apply_french_transation(record.get("comments"))
 
     for item in record.get('distributions', []):
         item['name'] = _apply_french_transation(item['name'])
