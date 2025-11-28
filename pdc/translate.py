@@ -79,6 +79,8 @@ def get_french_translated_cioos_record(record):
     """Translate a CIOOS record to English using AWS Translate."""
 
     def _apply_french_transation(field):
+        if not field or 'en' not in field:
+            return field
         field['fr'] = translate(
             field['en'],
             source_language="en",
